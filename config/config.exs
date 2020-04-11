@@ -11,6 +11,7 @@ config :mime, :types, %{
   "text/event-stream" => ["event-stream"]
 }
 
+config :bubble, :redis_host, (System.get_env("REDIS_HOST") || "localhost")
 
 config :joken, default_signer: (System.get_env("BUBBLE_SECRET") || "supersecret")
 

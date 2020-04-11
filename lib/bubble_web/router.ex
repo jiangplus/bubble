@@ -24,19 +24,18 @@ defmodule BubbleWeb.Router do
     get "/", PageController, :index
   end
 
+  scope "/api", BubbleWeb do
+    pipe_through :api
+
+    get "/list_keys", PubsubController, :list_keys
+    post "/publish", PubsubController, :publish
+    post "/add_key", PubsubController, :add_key
+    post "/remove_key", PubsubController, :remove_key
+  end
+
   scope "/pubsub", BubbleWeb do
     pipe_through :event
 
     get "/", PubsubController, :subscribe
-  end
-
-  scope "/api", BubbleWeb do
-    pipe_through :api
-
-    get "/", PubsubController, :index
-    get "/publish", PubsubController, :publish
-    get "/list_keys", PubsubController, :list_keys
-    post "/add_key", PubsubController, :add_key
-    post "/remove_key", PubsubController, :remove_key
   end
 end

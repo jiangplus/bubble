@@ -2,10 +2,6 @@ defmodule BubbleWeb.PubsubController do
   use BubbleWeb, :controller
   use Joken.Config
 
-  def index(conn, _params) do
-    json(conn, "hello")
-  end
-
   def add_key(conn, _params) do
     conn.query_params |> IO.inspect
     auth_token = conn.query_params["auth_token"]
@@ -13,8 +9,7 @@ defmodule BubbleWeb.PubsubController do
     key = conn.query_params["key"]
 
     {:ok, claims} = verify_and_validate(auth_token)
-    {:ok, rds} = Redix.start_link()
-    Redix.command(rds, ["SET", "bubble:#{key_user}:secret", key])
+    Redix.command(:redix, ["SET", "bubble:#{key_user}:secret", key])
     json(conn, "ok")
   end
 
@@ -24,15 +19,13 @@ defmodule BubbleWeb.PubsubController do
     key_user = conn.query_params["key_user"]
 
     {:ok, claims} = verify_and_validate(auth_token)
-    {:ok, rds} = Redix.start_link()
-    Redix.command(rds, ["DEL", "bubble:#{key_user}:secret"])
+    Redix.command(:redix, ["DEL", "bubble:#{key_user}:secret"])
     json(conn, "ok")
   end
 
   def list_keys(conn, _params) do
     conn.query_params |> IO.inspect
-    {:ok, rds} = Redix.start_link()
-    {:ok, keys} = Redix.command(rds, ["keys", "bubble*"])
+    {:ok, keys} = Redix.command(:redix, ["keys", "bubble*"])
     data = keys 
       |> Enum.map(fn key -> 
         [_x, y, _z] = String.split(key, ":")
@@ -50,8 +43,7 @@ defmodule BubbleWeb.PubsubController do
     auth_user = conn.query_params["auth_user"]
     auth_token = conn.query_params["auth_token"]
 
-    {:ok, rds} = Redix.start_link()
-    {:ok, auth_user_secret} = Redix.command(rds, ["GET", "bubble:#{auth_user}:secret"])
+    {:ok, auth_user_secret} = Redix.command(:redix, ["GET", "bubble:#{auth_user}:secret"])
 
     if !auth_user_secret do
       raise "auth key invalid"
@@ -63,7 +55,7 @@ defmodule BubbleWeb.PubsubController do
       raise "unauthorized channel"
     end
 
-    Redix.command(rds, ["PUBLISH", chan, data])
+    Redix.command(:redix, ["PUBLISH", chan, data])
     json(conn, "ok")
   end
 
@@ -74,8 +66,7 @@ defmodule BubbleWeb.PubsubController do
     auth_user = conn.query_params["auth_user"]
     auth_token = conn.query_params["auth_token"]
 
-    {:ok, rds} = Redix.start_link()
-    {:ok, auth_user_secret} = Redix.command(rds, ["GET", "bubble:#{auth_user}:secret"])
+    {:ok, auth_user_secret} = Redix.command(:redix, ["GET", "bubble:#{auth_user}:secret"])
 
     if !auth_user_secret do
       IO.inspect auth_user_secret

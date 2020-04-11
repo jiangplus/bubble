@@ -15,7 +15,7 @@ var token = jwt.sign({
 console.log(token)
 
 var url = `http://localhost:4000/api/publish?chan=${channel}&data=${payload}&auth_token=${token}&auth_user=${auth_user}`
-axios.get(url)
+axios.post(url)
   .then(function (response) {
     console.log(response.data)
   })
