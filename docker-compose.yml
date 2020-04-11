@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+    bubble_redis:
+      container_name: 'bubble_redis'
+      image: redis:4-alpine
+      volumes:
+        - ./data/redis:/data
+      command: redis-server
+
+  titan:
+    container_name: 'titan'
+    image: titan
+    links:
+      - bubble_redis
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@titan_db/titan_db
+      - SECRET_KEY_BASE=5S8GsLyg6vIVduv/lk76lSrvy6MM9gIbAdyJd5sPK4gENEzASR2UO0eWKHZzJTD3
+    command: /app/bin/titan_hub start
+    ports:
+      - "4000:4000"
