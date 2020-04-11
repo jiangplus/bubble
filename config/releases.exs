@@ -4,6 +4,10 @@
 # remember to add this file to your .gitignore.
 import Config
 
+config :bubble, :redis_host, (System.get_env("REDIS_HOST") || "localhost")
+
+config :joken, default_signer: (System.get_env("BUBBLE_SECRET") || "supersecret")
+
 secret_key_base =
   System.get_env("SECRET_KEY_BASE") ||
     raise """
@@ -23,7 +27,9 @@ config :bubble, BubbleWeb.Endpoint,
 # If you are doing OTP releases, you need to instruct Phoenix
 # to start each relevant endpoint:
 #
-#     config :bubble, BubbleWeb.Endpoint, server: true
+config :bubble, BubbleWeb.Endpoint, server: true
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.
+
+

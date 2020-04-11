@@ -22,6 +22,7 @@ RUN mix deps.compile
 
 # build assets
 COPY priv priv
+RUN mix phx.digest
 
 # build project
 COPY lib lib
@@ -38,7 +39,7 @@ RUN apk add --update bash openssl
 RUN mkdir /app
 WORKDIR /app
 
-COPY --from=build /app/_build/prod/rel/titan_hub ./
+COPY --from=build /app/_build/prod/rel/bubble ./
 RUN chown -R nobody: /app
 USER nobody
 

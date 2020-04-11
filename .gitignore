@@ -27,3 +27,4 @@ bubble-*.tar
 # this depending on your deployment strategy.
 /priv/static/
 /client/node_modules/
+/data/
