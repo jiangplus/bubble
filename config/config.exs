@@ -11,7 +11,6 @@ config :mime, :types, %{
   "text/event-stream" => ["event-stream"]
 }
 
-
 config :joken, default_signer: (System.get_env("BUBBLE_SECRET") || "supersecret")
 
 # Configures the endpoint
